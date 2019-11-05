@@ -1,6 +1,8 @@
 {-
 It's Gonna Rain, by Steve Reich
 TidalCycles performance implementation by Mike Hodnick
+
+Works on Tidal 1.4.4
 -}
 
 setcps (1/0.788)
