@@ -1,0 +1,121 @@
+{-
+It's Gonna Rain, by Steve Reich
+TidalCycles performance implementation by Mike Hodnick
+-}
+
+setcps (1/0.788)
+
+let 
+    part1PhaseRate = 1.0023
+    part2PhaseRate = 1.0025
+    part2DelayRate = 0.038
+    part2Slow = 10.5
+
+
+-- intro
+asap $ s "rain1full" 
+
+
+-- part 1 main
+d1 $ s "rain1" # cut 1
+
+
+-- part 1 first phase     
+do 
+    resetCycles
+    d1 
+        $ s "rain1x2*2"
+        # begin (range 0 0.5 $ slow 50 saw)
+        # cut 1
+
+
+-- part 1 main (again)
+d1 $ s "rain1" # cut 1
+
+
+-- part 1 second phase       
+do
+    resetCycles
+    d1 $ superimpose ((slow part1PhaseRate) . (# cut 2) . (# pan 1)) 
+        $ s "rain1" 
+        # cut 1 
+        # gain 0.925
+        # pan 0
+
+
+-- part 1 main (again)
+d1 $ s "rain1" # cut 1
+
+
+-- part 1 end
+do 
+    d1 silence
+    asap $ s "rain1end" # cut 1
+
+
+-- part 2 intro
+asap $ s "rain2full"
+
+
+-- part 2 singles
+do 
+    resetCycles
+    d1 
+        $ slow part2Slow
+        $ stack [ 
+            n 0
+            , (0.1 ~>) $ n 1
+            , (0.2 ~>) $ n 2 
+            , (0.25 ~>) $ n 3
+            , (0.365 ~>) $ n 4
+            , (0.47 ~>) $ n 5
+            , (0.6 ~>) $ n 6
+            , (0.6825 ~>) $ n 7
+            , (0.795 ~>) $ n 8
+            , (0.9 ~>) $ n 9
+        ] 
+        # s "rain2"
+
+
+-- part 2 phase 1
+do 
+    resetCycles
+    d1 
+        $ slow part2Slow 
+        $ superimpose (slow part2PhaseRate . (# pan 1))
+        $ stack [ 
+            n 0
+            , (0.1 ~>) $ n 1
+            , (0.2 ~>) $ n 2 
+            , (0.25 ~>) $ n 3
+            , (0.365 ~>) $ n 4
+            , (0.47 ~>) $ n 5
+            , (0.6 ~>) $ n 6
+            , (0.6825 ~>) $ n 7
+            , (0.795 ~>) $ n 8
+            , (0.9 ~>) $ n 9
+        ] 
+        # s "rain2" # gain 0.97 # pan 0
+
+
+
+-- part 2 phase 2
+-- over time, increment the stutWith parameter to include more repeats.
+-- Starting at 2, then 3, then 4, and so on. 
+d1 
+    $ slow part2Slow 
+    $ superimpose (slow part2PhaseRate . (# pan 1))
+    $ stutWith 2 part2DelayRate (|* gain 0.95)
+    $ stack [ 
+        n 0
+        , (0.1 ~>) $ n 1
+        , (0.2 ~>) $ n 2 
+        , (0.25 ~>) $ n 3
+        , (0.365 ~>) $ n 4
+        , (0.47 ~>) $ n 5
+        , (0.6 ~>) $ n 6
+        , (0.6825 ~>) $ n 7
+        , (0.795 ~>) $ n 8
+        , (0.9 ~>) $ n 9
+    ] 
+    # s "rain2" # gain 0.95 # pan 0
